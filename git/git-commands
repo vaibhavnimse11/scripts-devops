@@ -1,0 +1,36 @@
+
+generate  ssh-keygen  in vm 
+  - copy the id_rsa.pub --> paste in deploy keys of remote repository 
+
+git init
+  229  git config --global user.email "vaibhav.nimase13@gmail.com"
+  231  git config --global user.name "vaibhav"
+  232  git add hii.txt
+  233  git status
+  234  git commit -m "first"
+  235  git remote add origin "git@github.com:vaibhavnimse11/boardgame_project-.git"
+  236  git push origin master
+
+
+- sudo chmod 600 ~/.ssh/id_rsa  --> check  using ls  command 
+- sudo chown $(whoami) ~/.ssh/id_rsa --> giving owner permission to admin user
+
+
+=================================================
+
+if u want to use the  fork repo 
+
+       Go to https://github.com/jaiswaladi246/Boardgame
+
+   Click on “Fork” (top right).
+
+You’ll get a fork at:
+https://github.com/vaibhavnimse11/Boardgame
+
+Now, update your local repo to push to your fork:
+
+git remote set-url origin https://github.com/vaibhavnimse11/Boardgame.git
+
+Now push:
+
+git push origin master
