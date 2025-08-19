@@ -1,0 +1,125 @@
+
+
+
+    ====================================== installaing the prometheus ========================================
+
+    - wget https://github.com/prometheus/prometheus/releases/download/v3.5.0/prometheus-3.5.0.linux-amd64.tar.gz
+
+    - sudo tar -xvf prometheus-3.5.0.linux-amd64.tar.gz
+
+    -  cd prometheus-3.5.0.linux-amd64/
+
+            - sudo mkdir data
+            - sudo chmod 777 data
+            - ./prometheus &    --> & represents running background
+
+      - publicip:9090       --> allow port in security group 
+
+
+
+  ============================================ instalation of graphana =============================================
+
+      - sudo apt-get install -y adduser libfontconfig1 musl
+      
+      - wget https://dl.grafana.com/enterprise/release/grafana-enterprise_12.1.0_amd64.deb
+          
+       - sudo dpkg -i grafana-enterprise_12.1.0_amd64.deb
+
+       - sudo /bin/systemctl start grafana-server 
+
+       - enter public ip:3000 --> allow port number in seecurity group 
+
+           username: admin
+            password: admin
+
+
+    ==================================================================
+
+  after installing the prometheus and grafana --> 
+    
+    ==================== -==== we have to integrate the prometheus to grafana  ============================
+
+    - for that install the 
+    
+        - wget https://github.com/prometheus/blackbox_exporter/releases/download/v0.27.0/blackbox_exporter-0.27.0.linux-amd64.tar.gz
+
+        -  sudo tar -xvf blackbox_exporter-0.27.0.linux-amd64.tar.gz
+          
+        -  cd blackbox_exporter-0.27.0.linux-amd64/
+                        -   ./blackbox_exporter &    -> running background  on port number :9115
+ 
+             on port number :9115 ---> enable in security group     
+
+=======>>> copy this code and paste in the prometheus.yml
+
+    
+
+    scrape_configs:  ---->  add below code after this line 
+
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+        - http://prometheus.io
+        - http://174.129.179.226:30008/               - ---------->>>> give the ip of kubenetes worker node ip (where u deployed the website)
+        labels:
+          app: "prometheus"   # custom label for all targets in this block
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 3.83.49.157:9115  # Blackbox exporter IP:port         --->> give the blackbox exporter ip with port number
+
+- save the file
+
+     - pgrep prometheus
+    
+     -  kill 848
+     -  ./prometheus &
+
+    - refresh the prometheus website page 
+
+        - go to status --> target health 
+
+            - u will see blackbox and  prometheus  status up  --> if not wait or refresh the page 
+
+            - copy the target ip of kubenetes ip (in which node u deploy the website)
+
+
+- in grafana:- 
+        go to connections --> datasources 
+
+            - click on promotheus --> in connection section 
+                - paste the promotheus  --->  http://3.83.49.157:9090/
+                - and save it 
+
+        - in chrome search -->
+                blackbox dashboard grafana 
+
+        - in dashboard section --> go to new --> click  import 
+
+            - paste the id --> click on load 
+
+            - in data source section --> select the promotheus 
+
+            - click import 
+
+            - u will see the application dashboard 
+
+        
+                
+
+
+
+
+
+                            
+
+       
+
+
+      
